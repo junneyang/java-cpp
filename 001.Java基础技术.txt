@@ -1,0 +1,222 @@
+Java基础技术
+============================================================
+
+1、char与byte有什么区别？Java/C++进行比较。
+在C++中：
+在C++中，char是基础数据类型，8位，1个字节。byte不是基础数据类型，一般是typedef unsigned char byte;这样子的，
+也就是说，byte其实是unsigned char类型，那么也是8位，1个字节。
+不同的是，char可以表示的范围是-128-127，而byte可以表示的范围是0-255。
+在Java中：
+在java中，char和byte都是基础数据类型，其中的byte和C++中的char类型是一样的，8位，1个字节，-128-127。但是，char类型，是16位，2个字节，'\u0000'-'\uFFFF'。
+为什么java里的char是2个字节？
+因为java内部都是用unicode的，所以java其实是支持中文变量名的，比如string 世界 = "我的世界";这样的语句是可以通过的。
+网络编程中，C++使用char，Java使用byte
+
+2、Java中基本数据类型与引用数据类型区别
+基本数据类型:
+基本数据类型有8种，byte,char,int,float,short,double,long,boolean；
+变量名指向具体的数值；
+存放在栈中，离开作用域自动回收；
+变量在声明之后java就会立刻分配给他内存空间。如：short a;  java会在可使用的内存空间寻找一个占两个字节的块给a变量；
+引用数据类型:
+引用数据类型有类、接口和数组
+变量名指向存数据对象的内存地址,即变量名指向hash值；
+存放在堆中，Java虚拟机负责回收；
+引用数据类型就那三种，类似C/C++的指针，它以特殊的方式指向对象实体（具体的值），这类变量声明时不会分配内存，只是存储了一个内存地址；
+
+3、Java重载、覆盖、隐藏的区别
+重载：同一个类中，方法名相同，但参数不同的多个同名函数——静态联编
+覆盖：子类重写父类的方法，要求方法名和参数类型完全一样(参数不能是子类)，返回值和异常比父类小或者相同(即为父类的子类)，访问修饰符比父类大或者相同——动态绑定
+隐藏：父类和子类拥有相同名字的属性或者方法时，父类的同名的属性或者方法形式上不见了，实际是还是存在的——静态绑定
+
+4、Java的static、final关键字
+static关键字：可以修饰属性和方法，可以通过对象也可以通过类调用，实例方法、属性只有在对象创建之后才能调用，静态方法不能调用实例方法、属性，只能调用静态方法、属性。
+final关键字：只读属性，final修饰的对象本身不能被改变，但是对象的内容可以改变。
+voliate关键字：保证可见性，不保证线程安全。
+
+5、Java访问修饰符
+public：Java语言中访问限制最宽的修饰符，一般称之为“公共的”。被其修饰的类、属性以及方法不仅可以跨类访问，而且允许跨包（package）访问。
+private: Java语言中对访问权限限制的最窄的修饰符，一般称之为“私有的”。被其修饰的类、属性以及方法只能被该类的对象访问，其子类不能访问，更不能允许跨包访问。
+protect: 介于public 和 private 之间的一种访问修饰符，一般称之为“保护形”。被其修饰的类、属性以及方法只能被类本身的方法及子类访问，即使子类在不同的包中也可以访问。
+default：即不加任何访问修饰符，通常称为“默认访问模式“。该模式下，只允许在同一个包中进行访问。
+作用域		当前类		同一package		子孙类		其他package 
+public		√ 			√ 				√			√ 
+protected	√			√				√			× 
+friendly	√			√				×			× 
+private		√			×				×			× 
+
+6、Java内存管理
+栈：基本数据类型、对象的引用即地址、当然包括局部变量, 函数形式参数也是局部变量，退出作用域自动释放；
+堆：new出来的对象、当然包括成员变量，垃圾回收器负责回收
+静态存储区：字符串常量和基本数据类型常量-public static final、各种描述符都属于常量、常量在编译器优化时已经决定，堆变量在程序运行时决定
+垃圾回收: 自动进行/System.gc/null
+
+7、Java的String与StringBuilder
+String str = new String("abcxyz"); 创建三个对象，常量区一个，堆中new出一个，栈中引用一个
+String的值是不可变的，这就导致每次对String的操作都会生成新的String对象，不仅效率低下，而且大量浪费有限的内存空间
+StringBuffer是可变类，和线程安全的字符串操作类，任何对它指向的字符串的操作都不会产生新的对象,StringBuffer和StringBuilder类功能基本相似
+
+8、Java值传递、引用传递区别
+如果传递的是基本数据类型，实参不会改变
+如果传递的是引用，则引用不会发生改变、引用的值可以发生改变
+
+9、Java抽象类与接口
+抽象类是对类抽象，而接口是对行为的抽象。抽象类是对整个类整体进行抽象，包括属性、行为，但是接口却是对类局部（行为）进行抽象。
+abstract: 抽象类可以包含私有非静态非final成员变量、抽象方法、非抽象方法，抽象类在设计上强调的是is-a关系。只支持单重继承。
+inteface: 接口只能定义static final成员变量以及抽象方法，接口在设计上强调的是like-a关系.支持多重实现。接口本质上是抽象类的特殊化。
+抽象类所跨域的是具有相似特点的类，而接口却可以跨域不同的类。
+
+10、Java常用API
+System: 操作系统相关类，同时包括输入输出错误流
+Runtime: JVM运行时属性方法
+Calendar: 日历操作类
+Date: 日期操作类
+DateFormate: 日期格式化工具
+Math/Random: java数学计算
+
+11、Java IO系统
+File: 文件、目录操作抽象(信息获取、判断、创建删除等操作)
+IO结构: 输入输出流(输入输出相对于应用程序来说,应用程序写文件输出，应用程序读文件输入流)
+分类: 字节流(InputStream/OutStream)、字符流(Reader/Writer)、flush从缓冲区到流
+InputStream/OutStream-FileInputStream/ObjectInputStream/BufferInputStream
+Reader/Writer-BufferReader/InputStreamReader-FileReader
+字节流、字符流二者之间的桥梁是OutputStreamWriter、InputStreamReader
+使用示例如下，一般使用BufferedWriter/BufferedWriter，再使用桥梁关联各类FileInputStream/ObjectInputStream/BufferInputStream：
+BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(this.clientSocket.getOutputStream()));
+writer.write("eof");
+writer.flush();
+BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
+String line = br.readLine();
+ObjectInputStream使用前需要实现其序列化接口，Serializable什么也不用做，Externalizable则可以自定义实现序列化
+
+12、Java异常处理
+Throwable:是java异常机制的超类,Exception和error是:throwable的子类,Error:是程序无法解决问题. 比如内存溢出了,突然断电。Exception:我们可以通过程序控制的异常.
+finally不一定是最后执行的代码，如果try/catch有return语句，finally还会回到return语句做为结束点。但是不管return是否返回Finalily肯定是要被执行的.
+Throws：声明一个异常:这里可能要抛出异常了,Throw:才是真正的抛出一个异常的对象
+Java 的Enum与Exception可以结合使用提供比较完美的国际化解决方案
+
+13、Java线程
+进程与线程: 进程运行中的程序，线程运行中的代码片段。
+多个进程的内部数据和状态都是完全独立的，而多线程是共享一块内存空间和一组系统资源，有可能互相影响。
+线程本身的数据通常只有寄存器数据，以及一个程序执行时使用的堆栈，所以线程的切换负担比进程切换的负担要小。
+进程是重量级的任务，需要分配给它们独立的地址空间，进程间通信是昂贵和受限的，进程间的转换也是很需要花费的。
+另一方面，线程是轻量级的选手，它们共享相同的地址空间并且共同分享同一个进程，线程间的通信是便宜的，线程间的转换也是低成本的。
+线程创建: 基础Thread类-重写run方法，实现Runnable接口-重写run方法，前者不利于扩展，也不利于数据共享
+停止线程：线程的消亡不能通过调用stop()命令，而是让run()方法自然结束。stop()方法是不安全的，已经废弃。
+停止线程推荐的方式：设定一个标志变量，在run()方法中是一个循环，由该标志变量控制循环是继续执行还是跳出；循环跳出，则线程结束。
+join：主线程等待子线程结束之后继续执行，否则主线程与子线程交替执行
+Daemon：所谓守护 线程，是指在程序运行的时候在后台提供一种通用服务的线程，比如垃圾回收线程就是一个很称职的守护者，
+并且这种线程并不属于程序中不可或缺的部分。因 此，当所有的非守护线程结束时，程序也就终止了，同时会杀死进程中的所有守护线程。
+反过来说，只要任何非守护线程还在运行，程序就不会终止。
+用户线程和守护线程两者几乎没有区别，唯一的不同之处就在于虚拟机的离开：如果用户线程已经全部退出运行了，只剩下守护线程存在了，虚拟机也就退出了。 
+因为没有了被守护者，守护线程也就没有工作可做了，也就没有继续运行程序的必要了。
+如果一个变量是成员变量，那么多个线程对同一个对象的成员变量进行操作时，它们对该成员变量是彼此影响的，也就是说一个线程对成员变量的改变会影响到另一个线程。
+如果一个变量是局部变量，那么每个线程都会有一个该局部变量的拷贝（即便是同一个对象中的方法的局部变量，也会对每一个线程有一个拷贝），一个线程对该局部变量的改变不会影响到其他线程。
+线程安全经典方法：Synchronized
+Synchronized——Java中的每个对象都有一个锁（lock），或者叫做监视器（monitor），当一个线程访问某个对象的synchronized方法时，将该对象上锁，
+其他任何线程都无法再去访问该对象的synchronized方法了。直到之前的那个线程执行方法完毕后（或者是抛出了异常），才将该对象的锁释放掉，
+其他线程才有可能再去访问该对象的synchronized方法。注意这时候是给对象上锁，如果是不同的对象，则各个对象之间没有限制关系。
+如果某个synchronized方法是static的，那么当线程访问该方法时，它锁的并不是synchronized方法所在的对象，而是synchronized方法所在的类所对应的Class对象。
+总结：使用synchronized关键字解决线程的同步问题会带来一些执行效率上的问题。
+JDK1.4及之前是无法避免这些问题的。JDK 5.0引入了这样一个包：java.util.concurrent，专门解决这一问题。
+线程间通信经典方法：wait及notify
+wait()方法使得当前线程必须要等待，直到另外一个线程调用notify()或者notifyAll()方法。所以wait与notify是需要一起配对使用的。
+前提是，当前的线程必须拥有当前对象的monitor，也即lock，就是锁。
+要确保调用wait()方法的时候拥有锁，即，wait()方法的调用必须放在synchronized方法或synchronized块中。
+notify()方法会唤醒一个等待当前对象的锁的线程。notify()方法应该是被拥有对象的锁的线程所调用。
+换句话说，和wait()方法一样，notify方法调用必须放在synchronized方法或synchronized块中。notify方法本质是通知其他线程可以一起抢占锁了。
+
+14、多线程编程会遇到哪些问题
+线程死锁、线程饥饿。尽量不要使用复杂的线程模型。
+
+15、Java中sleep与wait有什么区别
+当线程调用了wait()方法时，它会释放掉对象的锁。
+另一个会导致线程暂停的方法：Thread.sleep()，它会导致线程睡眠指定的毫秒数，但线程在睡眠的过程中是不会释放掉对象的锁的。
+
+16、Java中的notify与notifyAll有什么区别
+notify和notifyAll都是把某个对象上休息区内的线程唤醒,notify只能唤醒一个,但究竟是哪一个不能确定,而notifyAll则唤醒这个对象上的休息室中所有的线程.
+一般有为了安全性,我们在绝对多数时候应该使用notifiAll(),除非你明确知道只唤醒其中的一个线程。否则notify用得不好容易导致死锁。
+
+17、Java中生产着消费模式实现的方法
+经典方法：共享资源——put、get方法使用Synchronized加锁，wait+notifyAll配合使用，Consumer、Producer实现Runnable接口、共享资源做为属性。
+可重入锁/条件变量方法——使用lock方法加锁，full、empty两个条件变量，精确控制线程的阻塞与唤醒。在经典方法上稍作改进。
+LinkedBlockingQueue：内部已经实现锁机制，直接put、take
+ConcurrentLinkedQueue：内部已经实现锁机制，直接put、take，无界队列。
+
+18、Java中Synchronized+wait+notify与Lock+await+signal区别
+synchronized是托管给JVM执行的，而lock是java写的控制锁的代码。lock可以实现比Synchronized所有功能，但是比Synchronized更强大、灵活，
+比如tryLock如果获取了锁立即返回true，如果别的线程正持有锁，立即返回false。
+Lock+await+signal配合能实现更加灵活的线程同步控制——使用读写分离锁。
+这就是多个Condition的强大之处，假设缓存队列中已经存满，那么阻塞的肯定是写线程，唤醒的肯定是读线程，相反，阻塞的肯定是读线程，
+唤醒的肯定是写线程，那么假设只有一个Condition会有什么效果呢，缓存队列中已经存满，这个Lock不知道唤醒的是读线程还是写线程了，
+如果唤醒的是读线程，皆大欢喜，如果唤醒的是写线程，那么线程刚被唤醒，又被阻塞了，这时又去唤醒，这样就浪费了很多时间。
+
+19、Java中LinkedBlockingQueue和ConcurrentLinkedQueue区别
+一个基于已链接节点的、范围任意的 blocking queue 。此队列按 FIFO（先进先出）排序元素。初始化需要指定队列长度、默认为Integer.MAX_VALUE 
+一个基于链接节点的、无界的、线程安全的队列 。无界队列、不需要指定长度。
+
+20、Java三个线程交替打印A、B、C如何实现
+解法一: 采用原始的synchronized, wait(), notify(), notifyAll()等方式控制线程。使用state变量标识哪个线程可以获得锁。
+解法二: 采用JDK1.5并发包提供的Lock, Condition等类的相关方法控制线程。使用state变量标识哪个线程可以获得锁。但是使用Condition可以精确控制线程唤醒。
+
+21、Java容器概述
+线性表:ArrayList && LinkedList。集合:HashSet && TreeSet。map:HashMap && TreeMap。
+Collections.synchronizedList(l);可以将ArrayList转化成线程安全的List。Set/Map雷同。
+Collections同步方式比较老的方式，流行的方式是java并发包提供的线程安全版本。
+hashset ArrayList LinkedList TreeSet hashMap treeMap linkedHashMap等，在迭代元素的时候 是不允许去修改我们的集合的。
+一旦修改会出现迭代异常.后来并发包下的集合解决了这个问题，引入弱迭代器。或者使用CopyOnWrite方式。
+CopyOnWriteArrayList读大于写的时候性能较好，是Collections.synchronizedList另外一种替代思路，可以应用于缓存。
+
+22、泛型有什么好处
+好处：代码复用、编译期间安全检查、不需要强制类型转化
+带有super超类型限定的通配符可以向泛型对易用写入，带有extends子类型限定的通配符可以向泛型对象读取
+
+23、Java反射的原理
+java vm启动时加载class文件，java对class字节码文件的描述也有专用的类Class。通过Class可以动态的获取类的信息，这叫做反射。
+三种方式获取Class对象：通过类名、通过类名字符串、通过类对象。
+获取Class对象之后就可以获取很多此类相关的信息如构造函数、方法、属性等、可以得到构造函数创建实例、可以执行方法。
+
+24、Java Socket TCP/UDP区别
+TCP：面向连接，三次握手保证正确连接，之后才正式发送数据——打手机、rpc
+UDP：数据报协议，通信不需要建立连接，不保证数据可以确定到达——发短信、心跳
+对于TCP，客户端Socket、服务端ServerSocket。基于getInputStream、getOutputSteam进行通信
+对于UDP协议客户端服务端都是DatagramSocket,SendTo/RecvFrom，完全依赖于数据包
+
+25、Java原子类详解
+使用同步在竞争很小或没有竞争时都可以很好地执行。然而，在竞争激烈时，这将大大损害性能，因为 JVM 用了更多的时间来调度线程，
+管理竞争和等待线程队列，而实际工作（如增加计数器）的时间却很少。虽然新的 ReentrantLock 类如何可以更可伸缩地替代同步，但是对于一些问题，还有更好的解决方法。 
+使用锁定还有一些其他危险，如死锁（当以不一致的顺序获得多个锁定时会发生死锁）。甚至没有这种危险，锁定也仅是相对的粗粒度协调机制，同样非常适合管理简单操作，
+如增加计数器或更新互斥拥有者。如果有更细粒度的机制来可靠管理对单独变量的并发更新，则会更好一些；在大多数现代处理器都有这种机制。 
+CAS：类似于 CAS 的指令允许算法执行读-修改-写操作，而无需害怕其他线程同时修改变量，因为如果其他线程修改变量，那么 CAS 会检测它（并失败），
+算法可以对该操作重新计算。清单 3 说明了 CAS 操作的行为（而不是性能特征），但是 CAS 的价值是它可以在硬件中实现，并且是极轻量级的（在大多数处理器中）
+Java原子类：atomic的原子类，这个包里面提供了一组原子类。其基本的特性就是在多线程环境下，当有多个线程同时执行这些类的实例包含的方法时，具有排他性，
+即当某个线程进入方法，执行其中的指令时，不会被其他线程打断，而别的线程就像自旋锁一样，一直等到该方法执行完成，才由JVM从等待队列中选择一个另一个线程进入，
+这只是一种逻辑上的理解。实际上是借助硬件的相关指令来实现的，不会阻塞线程（或者说只是在硬件级别上阻塞了）。
+
+26、Java同步
+信号量semaphore：同步方式实现N（如果为1，相当于synchronized）个线程同时执行，可以改变生产者-消费者模式的实现。
+Semaphore可以控制某个资源可被同时访问的个数，通过 acquire() 获取一个许可，如果没有就等待，而 release() 释放一个许可。
+比如在Windows下可以设置共享文件的最大客户端访问个数。 
+CyclicBarrier：一个同步辅助类，它允许一组线程互相等待，直到到达某个公共屏障点 (common barrier point)。
+在涉及一组固定大小的线程的程序中，这些线程必须不时地互相等待，此时 CyclicBarrier 很有用。
+因为该 barrier 在释放等待线程后可以重用，所以称它为循环 的 barrier。 多个线程await，直到await数目为N。
+CountDownLatch可以用来管理一组相关的线程执行，只需在主线程中调用CountDownLatch 的await方法（一直阻塞），让各个线程调用countDown方法。
+当所有的线程都只需完countDown了，await也顺利返回，不再阻塞了。在这样情况下尤其适用：将一个任务分成若干线程执行，等到所有线程执行完，再进行汇总处理。 
+主线程await，直到N减少到0。可以实现线程池的join功能。
+ReadWriteLock：对于读取这个动作来说，可以同时有多个线程同时去读取这个资源，但是对于写这个动作来说，只能同时有一个线程来操作，
+而且同时，当有一个写线程在操作这个资源的时候，其他的读线程是不能来操作这个资源的，这样就极大的发挥了多线程的特点，能很好的将多线程的能力发挥出来。
+
+27、Java的Callable、Future和FutureTask
+Callable与Runnable：Runnable吧，它是一个接口，在它里面只声明了一个run()方法，由于run()方法返回值为void类型，所以在执行完任务之后无法返回任何结果。
+Callable位于java.util.concurrent包下，它也是一个接口，在它里面也只声明了一个方法，只不过这个方法叫做call()，这是一个泛型接口，call()函数返回的类型就是传递进来的V类型。
+Callable一般是和ExecutorService的submit方法配合来使用的，具体的使用方法讲在后面讲述。
+Future：就是对于具体的Runnable或者Callable任务的执行结果进行取消、查询是否完成、获取结果。必要时可以通过get方法获取执行结果，该方法会阻塞直到任务返回结果。
+FutureTask：因为Future只是一个接口，所以是无法直接用来创建对象使用的，因此就有了下面的FutureTask。
+可以使用Callable+Future获取执行结果，也可以使用Callable+FutureTask获取执行结果。
+
+28、Java NIO、AIO
+阻塞和非阻塞、同步和异步的方式
+BIO:JDK1.4以前我们使用都是BIO 阻塞IO
+NIO:jdk1.4 linux 多路复用技术(select模式) 实现IO事件的轮询方式:同步非阻塞的模式.这个种方式目前是主流的网络通信模式
+AIO:jdk1.7 (NIO2) 才是实现真正的异步aio，AIO使用的比较少
+

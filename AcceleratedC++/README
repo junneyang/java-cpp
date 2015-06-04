@@ -1,0 +1,19 @@
+预处理+编译+汇编 ==> 生成.o目标代码
+g++ -c 001.helloworld.cpp -o 001.helloworld.o -O2
+链接 ==> 生成可执行文件
+g++ 001.helloworld.o -o 001.helloworld
+
+汇编
+g++ -c helloworld.cpp
+g++ -c h0.cpp
+g++ -c h1.cpp
+链接
+g++ helloworld.o h0.o h1.o -o helloworld
+
+
+CPPFLAGS('-D_GNU_SOURCE -D__STDC_LIMIT_MACROS -D__STDC_FORMAT_MACROS')
+CFLAGS('-g -O2 -pipe -W -Wall -fPIC')
+CXXFLAGS('-g -O2 -pipe -W -Wall -fPIC -finline-functions -Winline -Wreturn-type -Wtrigraphs -Wformat -Wparentheses -Wpointer-arith')
+INCPATHS('./deps/hiredis ./deps/cpp-btree ./src/common ./src')
+LIBS('./deps/hiredis/libhiredis.a ./liblaplace.a')
+LDFLAGS('-lpthread -lcrypto -lrt')

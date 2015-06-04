@@ -1,0 +1,36 @@
+Java Netty
+============================================================
+
+
+git clone https://github.com/openstack/keystone.git
+git checkout remotes/origin/stable/icehouse
+
+http://www.sdnlab.com/5365.html
+http://blog.sina.com.cn/s/blog_4b5039210102v2ft.html
+http://m.blog.csdn.net/blog/quqi99/19912437
+http://www.aboutyun.com/thread-9666-1-1.html
+http://cloud.51cto.com/art/201411/457285.htm
+http://www.kuqin.com/shuoit/20140525/340126.html
+http://network.cnw.com.cn/network-sdn/htm2015/20150101_317207.shtml
+http://network.chinabyte.com/467/12513467.shtml
+http://blog.sina.com.cn/s/blog_4b5039210102v2ft.html
+http://www.sdnlab.com/5889.html
+http://www.sdnlab.com/3166.html
+
+mysql -uroot -popenstack -e "GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'localhost' IDENTIFIED BY 'openstack';"
+mysql -uroot -popenstack -e "GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'controller0' IDENTIFIED BY 'openstack';"
+mysql -uroot -popenstack -e "GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'%' IDENTIFIED BY 'openstack';"
+
+swift-ring-builder account.builder add z1-10.20.0.88:6002/sdb1 100
+swift-ring-builder container.builder add z1-10.20.0.88:6001/sdb1 100
+swift-ring-builder object.builder add z1-10.20.0.88:6000/sdb1 100
+
+swift-ring-builder account.builder add r1z1-10.20.0.88:6002/swift 100 
+swift-ring-builder container.builder add r1z1-10.20.0.88:6001/swift 100
+swift-ring-builder object.builder add r1z1-10.20.0.88:6000/swift 100 
+
+
+curl -d '{"auth": {"tenantName": "service", "passwordCredentials":{"username": "swift", "password": "swift"}}}' -H "Content-type: application/json" http://10.20.0.88:35357/v2.0/tokens  | python -mjson.tool
+
+swift -V 2 -A http://controller0:35357/v2.0 -U service:swift -K swift stat
+curl -i http://controller0:8080/v2/AUTH_fc5fe691bf5647e7b4d9987842fb7c97 -I -H "X-Auth-Token: 576f6e0797d4456bbf4ddf69c19586ff"

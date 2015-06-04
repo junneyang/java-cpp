@@ -1,0 +1,314 @@
+Java Web
+============================================================
+
+学习资料、视频：http://www.konghao.org/
+JDK与tomcat配置安装，参考：http://www.aminglinux.com/study_v2/chapter23.html
+
+【JDK安装】
+jdk-6u45-linux-x64.bin
+vi ~/.bash_profile
+# added by jdk
+JAVA_HOME=/usr/local/jdk1.6.0_45/
+JAVA_BIN=$JAVA_HOME/bin
+JRE_HOME=$JAVA_HOME/jre
+PATH=$PATH:$JAVA_BIN:$JRE_HOME/bin
+CLASSPATH=.$JRE_HOME/lib:$JAVA_HOME/lib:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar  
+export JAVA_HOME JAVA_BIN JRE_HOME PATH CLASSPATH
+
+source ~/.bash_profile
+java -version
+
+【tomcat安装】
+http://mirrors.hust.edu.cn/apache/tomcat/tomcat-6/v6.0.43/bin/apache-tomcat-6.0.43.zip
+http://mirrors.hust.edu.cn/apache/tomcat/tomcat-6/v6.0.43/bin/apache-tomcat-6.0.43.tar.gz
+
+1、简单web发布与发布目录结构——新建完整目录结构，直接生效
+2、基于虚拟路径的发布与web.xml配置——tomcat配置修改需要重启，tomcat重要的配置文件server.xml、web.xml等
+3、基于多HOST的多个网站发布——同一个tomcat支持多个站点
+4、Spring Tool Suite使用——helloworld应用，与MyEclipse的区别。比较慢，但是和真实tomcat环境保持一致，可以简单的使用虚拟路径发布。
+5、Serverlet——将Java程序运行到web中，Eclipse中Alt+/自动联想。
+步骤：创建类继承HttpServlet，覆盖其doGet、doPost方法，web.xml配置路由与类的对应关系。
+注意：使用Eclipse Create a new Servlet类，可以自动完成上述动作，加快开发进程。
+6、doGet获取请求参数，getContextPath、getRealPath、getQueryString、getParameter、getParameterNames方法使用。
+7、Servlet+ajax+json的restful实践。
+8、servlet生命周期：请求——tomcat容器——web.xml解析url-pattern——tomcat找到处理类并加载——创建servlet实例化（第一次请求到达时创建，以后复用）——
+调用init方法（执行一次）——调用service方法分派请求给doGet或者doPost方法（每个请求对应于一个service方法）——处理完毕servlet返回请求给tomcat——
+tomcat返回给用户-回收调用destroy方法（tomcat自动回收）
+虽然service()方法运行在多线程的环境下，并不一定要同步该方法。而是要看这个方法在执行过程中访问的资源类型及对资源的访问方式。分析如下：
+i. 如果service()方法没有访问Servlet的成员变量也没有访问全局的资源比如静态变量、文件、数据库连接等，而是只使用了当前线程自己的资源，比如非指向全局资源的临时变量、request和response对象等。该方法本身就是线程安全的，不必进行任何的同步控制。
+ii. 如果service()方法访问了Servlet的成员变量，但是对该变量的操作是只读操作，该方法本身就是线程安全的，不必进行任何的同步控制。
+iii. 如果service()方法访问了Servlet的成员变量，并且对该变量的操作既有读又有写，通常需要加上同步控制语句。
+iv. 如果service()方法访问了全局的静态变量，如果同一时刻系统中也可能有其它线程访问该静态变量，如果既有读也有写的操作，通常需要加上同步控制语句。
+v. 如果service()方法访问了全局的资源，比如文件、数据库连接等，通常需要加上同步控制语句。
+9、乱码问题：Eclipse设置UTF-8，所有新建文件就是UTF-8；tomcat的server.xml的connector配置为UTF-8；serverlet的处理代码中设置request.setCharacterEncoding("UTF-8");
+数据库创建设置为UTF-8；文件解析写入等设置为UTF-8。
+10、JSP基础：Servelet生产html开发效率较低，通过jsp编写java代码，将jsp编译成servlet文件。jsp可以类比为php。
+JSP常用5个内置对象：out、request、response、session、application
+11、JSP原理：基于JSP代码发布，与一般html类型的web发布一样，可以使用完整目录、可以使用虚拟路径、可以使用多HOST站点发布。
+tomcat容器会自动将jsp转化为servlet，在tomcat的work目录下可以看到转化之后的源代码。JSP的本质是servlet，借助web容器将jsp转化为纯java代码。
+<%%>的代码全部转化到service方法中，<%!%>的代码转化为HttpServlet的方法或者属性。可以感觉得到JSP这种方式写代码非常乱，可以通过MVC的方式加以解决。
+JSP与JAVA类交互，可自动导入相关类。与php类似。
+12、页面跳转实现：基于servlet、基于jsp、基于前端（也是基于servlet）
+JSP跳转：response.sendRedirect("form.html");跳转之后前后代码执行完毕，浏览器的地址会改变。JSP跳转传递中文有问题。此为客户端跳转。
+使用jsp:forward与jsp:param实现服务端跳转。
+基于servlet也分为客户端跳转和服务端跳转，都是通过redirect和forward实现。
+服务端跳转只能使用url、session传递参数，客户端跳转可以使用url、session、request.setAttribute传递。
+13、JSP中相对路径与绝对路径：尽可能从根目录开始使用绝对路径，相对路径容易搞乱——最佳实践。
+14、JSP中动态包含与静态包含：<%@include file="/inc/top.jsp" %>为动态——不进行任何编译直接原样导入，
+<jsp:include page="/inc/top.jsp"></jsp:include>为静态——导入的文件先被编译为html。
+15、JSP页面间数据传递：最简单的GET/POST方式，setAttribute方式——pageContext（servlet没有）、request、session、application
+四种方式本页面均可见
+服务端跳转之后，pageContext数据丢失；
+客户端跳转之后，pageContext、request数据均丢失；
+更换浏览器之后，pageContext、request、session数据均丢失；
+重启服务之后，pageContext、request、session、application数据均丢失；
+使用原则，最小化。否则需要加锁，并且占用系统资源。
+request服务端页面跳转。
+session不同页面重新登陆，页面跳转session购物车。但是尽可能少用占用资源。
+计数器用application。
+16、小结：servlet与jsp原理、生命周期；页面跳转方式之redirect、forword、前端；页面参数传递之pageContext、request、session、application。
+掌握这些基础知识就可以进行项目开发了，最重要的基础知识。
+17、servlet的filter，链式处理，如：CharEncodingFilter实现Filter的doFilter方法即可。面向切面的编程开发。-权限控制还可以使用。
+
+18、基于Servlet与JSP的基本用户管理小项目开发
+[mysql安装配置]
+yum install mysql mysql-server -y
+service mysqld start
+chkconfig mysqld on
+
+vi /etc/my.cnf
+[mysqld]
+bind-address = 0.0.0.0
+default-storage-engine = innodb
+innodb_file_per_table
+collation-server = utf8_general_ci
+init-connect = 'SET NAMES utf8'
+character-set-server = utf8
+
+mysql -uroot -proot
+
+GRANT ALL PRIVILEGES ON *.*  TO 'root'@'%' IDENTIFIED BY 'root';
+GRANT ALL PRIVILEGES ON DB.TABLE  TO 'user'@'IP' IDENTIFIED BY 'password';
+grant all privileges on keystone.* to 'keystone'@'%' identified by 'keystone';
+
+GRANT ALL PRIVILEGES ON *.*  TO 'root'@'%' IDENTIFIED BY 'openstack';
+
+[sql数据库、数据表创建]
+utf8 -- UTF-8 Unicode
+utf8_general_ci
+
+DROP TABLE IF EXISTS `tbl_user`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tbl_user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `nickname` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+导出数据库：mysqldump -u 用户名 -p 数据库名 > 导出的文件名 
+19、JDBC数据库操作（增删改查、分页、查询）。
+20、Filter用于登陆控制。
+21、基于JDBC方式开发数据库扩容减容——不方便（数据库、Model、DAO、相关页面均需要同步修改）。
+22、ThreadLocal方式参数传递。ThreadLocal与FIleter结合过滤器实现分页参数传递。
+23、单例模式与配置文件读取。
+24、tomcat数据库连接池使用，提高效率、性能。
+25、mysql事务控制——保证操作原子性——需要innodb类型引擎支持，默认引擎不支持。不自动提交，有异常回滚到上一步。同一个DAO。
+不同的DAO怎么处理呢？——通过Filter的ThreadLocal提交，传递到不同的DAO，但是属于同一个线程。声明式事务。
+Spring是Java最伟大的框架。
+26、基于servlet代码发布，此问题还未解决。
+
+
+【基于框架的开发-持久化框架】
+1、JUDE项目设计
+用例图——类图——类图关系——类设计（属性即数据库设计）——数据库数据表创建（三种关系一对一一对多多对多的多主键、多外键）——
+实体类Model、Exception类继承RuntimeException
+2、持久化框架——Mybatis、Hibrenate，Hibrenate性能最低但是最方便，Mybatis性能稍好，没有Hibrenate方便。
+3、http://tools.jboss.org/downloads/jbosstools/luna/4.2.3.Final.html#marketplace在线安装JBOSS Hibrenate相关工具
+Application中的FreeMarkerIDE、HibernateTools，WebJ2EE中的HibernateTools，DataService中的HibernateTools，然后启动安装即可
+4、Hibernate安装：导入Hibernate lib中的require、导入log4j、导入数据库驱动
+创建Hibernate的配置文件，参考hibernate-release-4.1.11.Final\project\etc\hibernate.properties
+5、新建Model、Getter与Setter
+6、Model包中创建hbm文件，指定Model与数据库的映射关系
+7、将该配置文件添加到Hibernate配置文件
+8、创建SessionFactory——线程安全，单例类创建
+9、创建session，sessionFactory.openSession();
+10、通过session进行各种操作，开启事务、提交事务，整体过程与python ORM其实雷同。
+11、session工厂实现单例模式，使用session进行数据表增删改查。save、load、delete、update、
+session.createQuery("from User").setFirstResult(0).setMaxResults(5).list();
+12、Hibernate的三种状态：暂时（new数据库中没有、不被session管理）、持久（save）、离线（session关闭，数据库中有）
+save：被session管理，数据库已经存在，此时为持久化状态,内存中有拷贝
+提交时把session对象与目前对象不一致，继续自动发出sql语句，如此时的add update
+//持久化状态只有在commit时才会生成sql语句，其他更新操作没有意义
+load出来的对象也是持久化状态。只要在持久化状态update没有意义，commit的时候才生效。
+session内存管理，避免频繁的数据库操作，性能优化。
+save：总是会添加一条数据。之后变成持久化状态。
+update：可以变成持久化状态。
+离线变成瞬时对象：delete，数据库里面没有。session不管理。
+saveorUpdate：如果是离线状态，执行更新。如果是瞬时状态，执行插入操作。
+session：不能存在两份拷贝，相同的对象一份拷贝。merge可以合并两份对象。
+13、Hibernate延迟加载
+load：延迟加载，用的时候才发sql请求，代理对象没有值去数据库取值。
+get：立即加载，不用也发sql请求。
+get有可能出现空指针异常、load则可能没有。
+延迟加载可能会出现session关闭，数据取不到抛出异常的场景，可以使用两种方式解决，一是get方法、屏蔽延迟加载。
+一种是ThreadLocal，通过Filter解决，一个请求的操作在一个事务中完成。openSessionInView。
+14、ID生成策略
+<generator class="assigned" />,需要指定id的值，默认为0，再次插入就会报错。
+<generator class="uuid" />,自动生成字符串，主键必须为String类型。
+native,自动递增，坏处是每次递增需要查询数据库找到下一个num，效率有影响。
+uuid本身唯一性已经得到保障，不需要查询数据库。
+15、Hibernate的映射
+基本属性映射：<property name="bookPage" column="book_page" type="int"></property>，一般不用hibernate生成数据库，设计的时候已经生成了，这个只是开发方便。
+多对一映射（班级、学生、学生属于哪个班级，在学生配置文件配置）：<many-to-one name="classRoom" column="id_classroom"></many-to-one>   
+Student类中设置引用ClassRoom。最佳实践，先添加one，再添加many。
+System.out.println(student1.getClassRoom().getName());
+关联对象也是延迟加载，再发sql取关联数据。可以有优化。
+清楚的知道每个请求发几条sql，不然可能出现性能问题。
+cascade：级联关系，默认update、delete为限制。一般不在many方设置，一般都在one方删除时使用。
+RESTRICT：限制删除（默认行为）	NO ACTION：不做操作	CASCADE：级联删除	SET NULL：设置为NULL
+一对多映射：（留言、评论、留言包含评论Set）
+<set name="comments" lazy="extra">
+	<key column="id_msg"></key>
+	<one-to-many class="Comment"/>
+</set>
+对象创建先后关系，影响到sql语句多少、性能。sql语句有时候并不智能，count（id）还是取出列表不智能。
+OneToMany比较麻烦，建议使用manyToOne。
+一对多双向映射：先添加一，再添加多，sql优化。
+一对一映射：人与身份证。
+<many-to-one name="person" column="id_persion" unique="true"></many-to-one>
+双向一对一：需要指明在哪一段维护关系——即外键在哪一段就由哪一段维护。
+<one-to-one name="idCard" property-ref="person"></one-to-one>
+增加、查询语句和从那一端进行维护的效率和自动生成的sql语句完全不一样。难以维护。
+在不维护关系方查询效率较高，因为没有延迟加载，1条sql语句就搞定了。
+多对多关系：select t1.id_admin,t2.name from t_admin_role t1 join t_role t2 on t1.id_role = t2.id where t1.id_admin=1;
+<set name="roles" table="t_admin_role" lazy="extra">
+	<key column="id_admin"></key>
+	<many-to-many class="Role" column="id_role"></many-to-many>
+</set>
+<set name="admins"  table="t_admin_role"  lazy="extra">
+	<key column="id_role"></key>
+	<many-to-many class="Admin" column="id_admin"></many-to-many>
+</set>
+多对多关系可以转化为两个一对多的关系。AdminRole显示定义为类，持有Admin、Role对象。Admin、Role分别持有AdminRole，变成一对多关系。
+解耦之后操作比较方便、清晰。
+16、基于注解的配置：3.0后的配置，简化操作。但是丧失灵活性，需要修改源代码。
+不过涉及到修改项目，但是又不修改源代码，比较少，呵呵呵。
+@OneToMany(mappedBy="one")：表示关系在对端维护，否则自动创建新表。
+@ManyToOne@JoinColumn(name="one_id")：可以指定关联字段名称。
+@ManyToMany
+@JoinTable(
+		name="t_m1_m2",
+		joinColumns={@JoinColumn(name="m1_id")},
+		inverseJoinColumns={@JoinColumn(name="m2_id")}
+)所以还是建议使用注解方式。大项目建议使用xml——统一管理，小项目建议使用注解——快速原型。
+17、HQL：对查询条件进行了面向对象封装，比直接使用sql语句快捷方便。
+基于HQL的查询，Spcecial、ClassRoom、Student。基于条件的查询。
+Query query = session.createQuery("select one from One one where name like ?").setParameter(0, "%th%");
+query = session.createQuery("select stu from Student stu where stu.classRoom.grade=?")
+query = session.createQuery("select stu from Student stu where stu.classRoom.grade=? and stu.classRoom.id in (:classid)")
+.setParameter(0, 333)
+.setParameterList("classid", new Integer[]{1,2});
+setFirstResult+setMaxResults分页查询。
+HQL连接查询：左（外）连接、右（外）连接、内连接，分别要求左边右边两边都不为空NULL。
+select tc.id,count(*) from t_classroom tc left join t_student ts on tc.id=ts.id_classroom group by tc.id;
+还有cross连接，笛卡尔连接，效率较低。
+导航链接基于cross连接，最好自己写代码，基于join连接。
+多表（大于等于三标）连接查询，多次join。
+HQL中可以使用DTO，new对象，专门用于传输。select new XXX();方便前端进行数据处理。但是需要提供DTO的完整包名。
+18、抓取策略
+<many-to-one name="classRoom" column="id_classroom" cascade="all" fetch="join"></many-to-one>
+select（默认）、join（一条sql语句）、
+join会抓取关联对象，效率较高，但是危害是不访问关联对象，也会join，Annotation默认基于join，xml默认基于select。
+前者没有延迟加载，后者有延迟加载。但是二者都是可以配置的。
+batch-size；一次取出多条。但是占用内存。
+HQL中fetch指定抓取。select XX from XX join fetch XX。使用join fetch不能使用count。
+XML与Annotation四种语法有一一对应的关系。
+19、缓存
+一级缓存：session中，再次查询，不会有sql。
+二级缓存：配置文件开启二级缓存，如EHCache。开启二级缓存，设置外部类。
+设置EHCache自己的xml文件，配置二级缓存的参数。
+类的配置文件中开启缓存，设置为read-only。session关闭，二级缓存中有对象，也不会查询数据库。
+20、并发问题
+更新丢失：两种解决方案，可以解决并发问题。
+悲观锁：Hibernater基于数据库机制实现。Hibernate 基于同步机制。对效率影响较大。
+User user = (User)session.load(User.class, 1, LockOptions.UPGRADE);
+乐观锁：数据库中增加version字段实现，每次修改都会将这个字段加一，并发修改，抛异常，版本不一致。重试一次就可以解决。
+一般都只会用乐观锁。
+21、最佳实践
+a、尽可能使用单向关联，不要使用双向关联。
+b、大项目中，使用Hibernate可以酌情考虑以下原则：
+	不使用对象关联（不使用外键，冗余替代），减少join，但是更新无外键限制，需要手动更新；——不使用外键关联，前提是懂业务。
+	使用DTO，需要多少字段查询多少字段。
+	查询数据使用sql(createSQLQuery 转化为对象使用addEntity)，不使用HQL(createQuery)，可以使用缓存。
+
+【基于框架的开发-持久化框架】
+1、MyBatis：自己写sql代码，代替Hibernate
+2、基于xml配置，基于注解
+3、日志包，查看实际sql语句
+4、使用别名，解决；sql建模与model字段不一致问题
+5、使用resultMap解决sql建模与model字段不一致问题
+6、一对一关系查询：teacher-class，建表——建模——查询语句——注册xml。根据班级id查询班级信息、包括老师信息
+联表查询，去重。resultMap+association+javaType
+多次查询，关联查询值。resultMap+association+select+column
+7、一对多关系查询：teacher-class-student，建表——建模——查询语句——注册xml。根据班级id查询班级信息、包括老师和学生信息
+连表查询，去重。resultMap+collection+ofType
+多次查询，关联查询值。resultMap+collection+select+column
+8、动态sql：多条件查询，姓名模糊匹配，年龄区间。xml辅助表达式。
+9、mybatis调用存储过程：还没有调通，有问题！mysql他妈的有问题。
+10、mybatis缓存：一级缓存session作用域（内部实现，session关闭清除、clearCache也可以清除、执行增删改操作，不能使用commit）
+二级缓存sessionFactory范围（添加cache标签即可、缓存使用序列化反序列化机制、必须使用commit）。
+11、mybatis与spring的集成，声明式事务。
+mybatis-spring-1.2.0.jar
+spring的相关包、2个日志包
+
+http://mvnrepository.com/artifact/org.mybatis/mybatis-spring/1.1.1
+http://edu.51cto.com/course/course_id-3199.html
+http://edu.51cto.com/course/course_id-2224.html
+http://www.infoq.com/cn/articles/netty-high-performance/#anch110666
+http://10.48.55.39:8088/iops
+https://github.com/sheepdog/sheepdog/wiki/Backend-Stores%2C-Object-Cache
+https://github.com/sheepdog/sheepdog/wiki
+https://github.com/sheepdog/sheepdog
+
+
+【基于框架的开发-版本管理】
+1、Maven：mvn compile	mvn test	mvn clean	mvn package	mvn install 
+2、mvn archetype:generate -DarchetypeCatalog=internal -DgroupId=app.test.mvn -DartifactId=app.test.mvn -DarchetypeArtifactId=maven-archetype-quickstart
+3、eclipse使用mvn
+4、http://mvnrepository.com/
+5、
+
+【基于框架的开发-MVC框架-Struts2】
+1、struts-2.3.20\apps\WEB-INF\lib需要的jar包
+2、过滤器：web.xml，也在示例中。
+3、struts配置文件，src目录中创建。
+4、创建Action，为Action编写相应的execute方法。
+5、struts的xml文件中配置Action和返回结果集。
+6、action的配置：后面省略，不再学习struts
+【基于框架的开发-MVC框架-SpringMVC】
+特性：IOC、AOP
+1、导包：spring、commons-logging包
+2、新建beans.xml，为beans添加相应的schema
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd">
+</beans>
+3、创建对象
+4、beans.xml中创建对象
+5、测试类中使用该对象
+创建Spring工厂、通过工厂获取Spring对象、对象被Spring管理。
+6、依赖注入：被依赖对象创建getter、setter方法。设计模式，不用new、不用if/else。
+7、除xml，也可以基于注解的方式。
+8、AOP面向切面的编程。基于静态代理（局限）、基于动态代理。
+静态代理：持有一般接口。
+动态代理：实现java.lang.reflect.InvocationHandler接口。
+创建代理对象：private Object target。
+创建一个方法，生成对象，方法参数是要代理的对象。
+
+
+9、
+
+
